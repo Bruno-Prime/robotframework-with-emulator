@@ -1,0 +1,6 @@
+robotframework
+robotframework-appiumlibrary
+robotframework-faker
+robotframework-requests
+requests_toolbelt
+perfectolibrary-py37==0.5.1

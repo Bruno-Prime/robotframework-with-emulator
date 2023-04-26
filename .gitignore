@@ -1,0 +1,6 @@
+.vscode/
+venv
+results
+app/*
+!app/*.apk
+**manusis*
