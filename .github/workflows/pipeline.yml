@@ -55,13 +55,15 @@ jobs:
         mv cmdline-tools tools
         chmod +x ../scripts/android-licenses.exp
         ../scripts/android-licenses.exp
-
+          export $HOME:/tools/bin/sdkmanager:$HOME/android-sdk
+        ./tools/bin/sdkmanager --install "system-images;android-23;google_apis;x86"
+        ./tools/bin/sdkmanager --list
+        ./tools/bin/sdkmanager build-tools 30
         ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --list
         ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --install build-tools ${{ matrix.api-level }} || true
         ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --install platform ${{ matrix.api-level }} || true
         ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --install "system-images;android-${{ matrix.api-level }};google_apis;x86"
         ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --install "system-images;android-${{ matrix.api-level }};google_apis;x86_64"
-
         # ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-${{ matrix.api-level }}" "system-images;android-${{ matrix.api-level }};google_apis;x86_64"
         echo 'export ANDROID_HOME="$HOME/android-sdk"' >> $GITHUB_ENV
         export ANDROID_HOME="$HOME/android-sdk"
