@@ -53,6 +53,7 @@ jobs:
         wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
         unzip commandlinetools-linux-7583922_latest.zip
         mv cmdline-tools tools
+        echo $HOME
         chmod +x ../scripts/android-licenses.exp
         ../scripts/android-licenses.exp
 

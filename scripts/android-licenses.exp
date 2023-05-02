@@ -1,7 +1,7 @@
 #!/usr/bin/expect
 
 set timeout -1
-spawn ./tools/bin/sdkmanager --sdk_root=$PWD --licenses
+spawn ./tools/bin/sdkmanager --sdk_root=. --licenses
 expect {
     "Accept? (y/N):" {
         send -- "y\r"
