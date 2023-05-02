@@ -1,7 +1,7 @@
 #!/usr/bin/expect
 
 set timeout -1
-spawn ./tools/bin/sdkmanager --licenses
+spawn ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --licenses
 expect {
     "Accept? (y/N):" {
         send -- "y\r"

@@ -57,7 +57,7 @@ jobs:
         ../scripts/android-licenses.exp
 
         ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --list
-        ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk build-tools ${{ matrix.api-level }}
+        # ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk build-tools ${{ matrix.api-level }}
         ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk platform ${{ matrix.api-level }}
         ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk "system-images;android-${{ matrix.api-level }};google_apis;x86"
         ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk "system-images;android-${{ matrix.api-level }};google_apis;x86_64"
