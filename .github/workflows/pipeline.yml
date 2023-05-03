@@ -12,8 +12,7 @@ env:
     ARCH: x86_64
 jobs:
   mobile-tests:
-    runs-on: ubuntu-20.04
-    # runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     # runs-on: macos-latest
     strategy:
       matrix:
@@ -30,7 +29,6 @@ jobs:
         sudo apt-get update
         sudo apt-get install expect tree
         pip3 install -r requirements.txt
-
     - name: Start AppiumServer
       run: |
         chmod +x ./scripts/startAppiumServer.sh
@@ -46,7 +44,6 @@ jobs:
       run: |
         echo $JAVA_HOME
         java -version
-
     - name: Install Android SDK
       run: |
         #mkdir android-sdk
@@ -85,31 +82,27 @@ jobs:
     - name: Update SDK
       run: |
         ls $ANDROID_HOME
-
     - name: Create AVD
       run: |
-        # export PATH=$PATH:$ANDROID_HOME/tools/bin
-        # ./$ANDROID_HOME/tools/bin/sdkmanager --list --sdk_root=$ANDROID_HOME
-
-        # echo no | avdmanager create avd --force --name test_emulator -k "system-images;android-${{ matrix.api-level }};google_apis;x86" --device "Pixel_4" --sdk_root=$ANDROID_HOME
-
+        export PATH=$PATH:$ANDROID_HOME/tools/bin
+        ./$ANDROID_HOME/tools/bin/sdkmanager --list --sdk_root=$ANDROID_HOME
+        #echo no | avdmanager create avd --force --name test_emulator -k "system-images;android-${{ matrix.api-level }};google_apis;x86" --device "Pixel_4" --sdk_root=$ANDROID_HOME
+        echo no | avdmanager create avd --force --name test_emulator -k "system-images;android-${{ matrix.api-level }};google_apis;x86" --device "Pixel_4"
         # echo no | $ANDROID_HOME/tools/bin/avdmanager --sdk_root=$ANDROID_HOME create avd --force --name test_emulator -k "system-images;android-${{ matrix.api-level }};google_apis;x86" --device "Pixel_4"
-        wget -P $HOME https://repo1.maven.org/maven2/javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar
-        mkdir -p $ANDROID_HOME/libs
-        mkdir -p ~/.android/avd
+        # wget -P $HOME https://repo1.maven.org/maven2/javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar
+        # mkdir -p $ANDROID_HOME/libs
+        # mkdir -p ~/.android/avd
         # cp $HOME/jaxb-api-2.3.1.jar $ANDROID_HOME/libs
-        echo 'export CLASSPATH="$ANDROID_HOME/libs/*"' >> $GITHUB_ENV
-        export CLASSPATH="$ANDROID_HOME/libs/*"
+        # echo 'export CLASSPATH="$ANDROID_HOME/libs/*"' >> $GITHUB_ENV
+        # export CLASSPATH="$ANDROID_HOME/libs/*"
         # echo no | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name test_emulator --abi "google_apis/x86_64" --package "system-images;android-${{ matrix.api-level }};google_apis;x86_64"
-        echo no | $ANDROID_HOME/tools/bin/avdmanager --sdk_root=$ANDROID_HOME create avd --force --name test_emulator -k "system-images;android-${{ matrix.api-level }};google_apis;x86" --device "Pixel_4"
+        # echo no | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name test_emulator -k "system-images;android-${{ matrix.api-level }};google_apis;x86" --device "Pixel_4"
           
-
     - name: List devices
       run: |
         $ANDROID_HOME/tools/emulator -list-avds
         $ANDROID_HOME/platform-tools/adb devices
         ls testesdasd
-
     - name: Run Tests
       continue-on-error: true
       run: |
