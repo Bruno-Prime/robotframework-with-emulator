@@ -48,6 +48,25 @@ jobs:
 
     - name: Install Android SDK
       run: |
+        #mkdir android-sdk
+        #cd android-sdk
+        #wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
+        #unzip commandlinetools-linux-7583922_latest.zip
+        #mv cmdline-tools tools
+        #chmod +x ../scripts/android-licenses.exp
+        #../scripts/android-licenses.exp
+        #export $HOME:/tools/bin/sdkmanager:$HOME/android-sdk
+        #./tools/bin/sdkmanager --install "system-images;android-23;google_apis;x86"
+        #./tools/bin/sdkmanager --list
+        #./tools/bin/sdkmanager build-tools 30
+        #./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --list
+        #./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --install build-tools ${{ matrix.api-level }} || true
+        #./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --install platform ${{ matrix.api-level }} || true
+        #./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --install "system-images;android-${{ matrix.api-level }};google_apis;x86"
+        #./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --install "system-images;android-${{ matrix.api-level }};google_apis;x86_64"
+        # ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-${{ matrix.api-level }}" "system-images;android-${{ matrix.api-level }};google_apis;x86_64"
+        #echo 'export ANDROID_HOME="$HOME/android-sdk"' >> $GITHUB_ENV
+        #export ANDROID_HOME="$HOME/android-sdk
         mkdir android-sdk
         cd android-sdk
         wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
@@ -55,18 +74,19 @@ jobs:
         mv cmdline-tools tools
         chmod +x ../scripts/android-licenses.exp
         ../scripts/android-licenses.exp
-          export $HOME:/tools/bin/sdkmanager:$HOME/android-sdk
+        export PATH="$HOME/android-sdk/tools/bin:$PATH"
+        export PATH="$HOME/android-sdk/platform-tools:$PATH"
         ./tools/bin/sdkmanager --install "system-images;android-23;google_apis;x86"
         ./tools/bin/sdkmanager --list
-        ./tools/bin/sdkmanager build-tools 30
+        ./tools/bin/sdkmanager "build-tools;30.0.3"
         ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --list
-        ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --install build-tools ${{ matrix.api-level }} || true
-        ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --install platform ${{ matrix.api-level }} || true
-        ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --install "system-images;android-${{ matrix.api-level }};google_apis;x86"
-        ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --install "system-images;android-${{ matrix.api-level }};google_apis;x86_64"
+        ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --install "build-tools;${{ matrix.api-level }}" || true
+        ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --install "platforms;android-${{ matrix.api-level }}" || true
+        ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --install "system-images;android-${{ matrix.api-level}};google_apis;x86" || true
+        ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk --install "system-images;android-${{ matrix.api-level}};google_apis;x86_64" || true
         # ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-${{ matrix.api-level }}" "system-images;android-${{ matrix.api-level }};google_apis;x86_64"
         echo 'export ANDROID_HOME="$HOME/android-sdk"' >> $GITHUB_ENV
-        export ANDROID_HOME="$HOME/android-sdk"
+        echo 'export PATH="$HOME/android-sdk/platform-tools:$PATH"' >> $GITHUB_ENV
       shell: bash
 
     - name: Update SDK
