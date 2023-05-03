@@ -88,6 +88,8 @@ jobs:
     - name: Create AVD
       run: |
         export PATH=$PATH:$ANDROID_HOME/tools/bin
+        ./$ANDROID_HOME/tools/bin/sdkmanager --list --sdk_root=$ANDROID_HOME
+
         #echo no | avdmanager create avd --force --name test_emulator -k "system-images;android-${{ matrix.api-level }};google_apis;x86" --device "Pixel_4" --sdk_root=$ANDROID_HOME
         echo no | avdmanager create avd --force --name test_emulator -k "system-images;android-${{ matrix.api-level }};google_apis;x86" --device "Pixel_4"
 
