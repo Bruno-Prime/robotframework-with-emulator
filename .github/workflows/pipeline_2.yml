@@ -52,6 +52,8 @@ jobs:
         mv cmdline-tools tools
         chmod +x ../scripts/android-licenses.exp
         ../scripts/android-licenses.exp
+        export $HOME:/tools/bin/sdkmanager:$HOME/android-sdk
+        ./tools/bin/sdkmanager --list
         ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-${{ matrix.api-level }}" "system-images;android-${{ matrix.api-level }};google_apis;x86_64"
         echo 'export ANDROID_HOME="$HOME/android-sdk"' >> $GITHUB_ENV
         export ANDROID_HOME="$HOME/android-sdk"
@@ -68,7 +70,6 @@ jobs:
         cp $HOME/jaxb-api-2.3.1.jar $ANDROID_HOME/libs
         echo 'export CLASSPATH="$ANDROID_HOME/libs/*"' >> $GITHUB_ENV
         export CLASSPATH="$ANDROID_HOME/libs/*"
-        ./tools/bin/sdkmanager --list
         echo no | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name test_emulator --abi "google_apis/x86_64" --package "system-images;android-${{ matrix.api-level }};google_apis;x86_64"
     - name: List devices
       run: |
