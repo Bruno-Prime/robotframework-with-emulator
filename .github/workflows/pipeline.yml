@@ -87,6 +87,7 @@ jobs:
 
     - name: Create AVD
       run: |
+        echo no | $ANDROID_HOME/tools/bin/avdmanager --sdk_root=$ANDROID_HOME create avd --force --name test_emulator -k "system-images;android-${{ matrix.api-level }};google_apis;x86" --device "Pixel_4"
         # wget -P $HOME https://repo1.maven.org/maven2/javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar
         # mkdir -p $ANDROID_HOME/libs
         # mkdir -p ~/.android/avd
@@ -94,8 +95,8 @@ jobs:
         # echo 'export CLASSPATH="$ANDROID_HOME/libs/*"' >> $GITHUB_ENV
         # export CLASSPATH="$ANDROID_HOME/libs/*"
         # echo no | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name test_emulator --abi "google_apis/x86_64" --package "system-images;android-${{ matrix.api-level }};google_apis;x86_64"
-
-        echo no | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name test_emulator -k "system-images;android-${{ matrix.api-level }};google_apis;x86" --device "Pixel_4"
+        # echo no | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name test_emulator -k "system-images;android-${{ matrix.api-level }};google_apis;x86" --device "Pixel_4"
+          
 
     - name: List devices
       run: |
