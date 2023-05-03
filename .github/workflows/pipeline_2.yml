@@ -68,6 +68,7 @@ jobs:
         cp $HOME/jaxb-api-2.3.1.jar $ANDROID_HOME/libs
         echo 'export CLASSPATH="$ANDROID_HOME/libs/*"' >> $GITHUB_ENV
         export CLASSPATH="$ANDROID_HOME/libs/*"
+        ./tools/bin/sdkmanager --list
         echo no | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name test_emulator --abi "google_apis/x86_64" --package "system-images;android-${{ matrix.api-level }};google_apis;x86_64"
     - name: List devices
       run: |
