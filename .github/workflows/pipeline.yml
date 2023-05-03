@@ -12,7 +12,7 @@ env:
     ARCH: x86_64
 jobs:
   mobile-tests:
-    runs-on: actuated
+    runs-on: ubuntu-18.04
     # runs-on: ubuntu-latest
     # runs-on: macos-latest
     strategy:
@@ -24,14 +24,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-
-    - uses: actions/setup-python@v3
-      with:
-        python-version: '3.x'
-
-    - uses: cachix/install-nix-action@v16
-      with:
-        extra_nix_config: "system-features = nixos-test benchmark big-parallel kvm"
 
     - name: Install Dependencies
       run: |
