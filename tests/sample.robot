@@ -1,5 +1,11 @@
 *** Settings ***
-Resource        ../resources/main.robot
+# Resource        ../resources/main.robot
+
+Library     String
+Library     Collections
+Library     DateTime
+Library     AppiumLibrary    timeout=15
+Library     PerfectoLibrary    Sample Contador    1.0
 
 Test Setup      New Session    ${SESSION_TYPE}
 

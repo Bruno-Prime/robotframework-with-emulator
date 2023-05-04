@@ -1,0 +1,87 @@
+name: Execução com Emulador - 2
+
+on:
+  # push:
+  #   branches: [ main ]
+  workflow_dispatch:
+
+env:
+    CACHE_VERSION: 1 # Increment this to invalidate the cache.
+    JAVA_VERSION: 19
+    TARGET: google_apis
+    ARCH: x86_64
+jobs:
+  mobile-tests:
+    runs-on: ubuntu-latest
+    # runs-on: macos-latest
+    strategy:
+      matrix:
+        api-level: [32]
+        state: ['Online']
+      max-parallel: 1
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install expect tree
+        pip3 install -r requirements.txt
+    - name: Start AppiumServer
+      run: |
+        chmod +x ./scripts/startAppiumServer.sh
+        ./scripts/startAppiumServer.sh
+      shell: bash
+
+    - name: Setup Java JDK
+      uses: actions/setup-java@v1.4.4
+      with:
+        java-version: 1.8
+
+    - name: Check Java Version
+      run: |
+        java -version
+    - name: Install Android SDK
+      run: |
+        mkdir android-sdk
+        cd android-sdk
+        wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
+        unzip commandlinetools-linux-7583922_latest.zip
+        mv cmdline-tools tools
+        chmod +x ../scripts/android-licenses.exp
+        ../scripts/android-licenses.exp
+        export $HOME:/tools/bin/sdkmanager:$HOME/android-sdk
+        ./tools/bin/sdkmanager --list
+        ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-${{ matrix.api-level }}" "system-images;android-${{ matrix.api-level }};google_apis;x86_64"
+        echo 'export ANDROID_HOME="$HOME/android-sdk"' >> $GITHUB_ENV
+        export ANDROID_HOME="$HOME/android-sdk"
+      shell: bash
+
+    - name: Update SDK
+      run: |
+        ls $ANDROID_HOME
+    - name: Create AVD
+      run: |
+        wget -P $HOME https://repo1.maven.org/maven2/javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar
+        mkdir -p $ANDROID_HOME/libs
+        mkdir -p ~/.android/avd
+        cp $HOME/jaxb-api-2.3.1.jar $ANDROID_HOME/libs
+        echo 'export CLASSPATH="$ANDROID_HOME/libs/*"' >> $GITHUB_ENV
+        export CLASSPATH="$ANDROID_HOME/libs/*"
+        echo no | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name test_emulator --abi "google_apis/x86_64" --package "system-images;android-${{ matrix.api-level }};google_apis;x86_64"
+    - name: List devices
+      run: |
+        $ANDROID_HOME/platform-tools/adb devices
+        ls testesdasd
+    - name: Run Tests
+      continue-on-error: true
+      run: |
+        robot -d results/${{ matrix.api-level }}/${{ matrix.state }} -v UDID:emulator-5554 -v host:STGN -i poc .
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: resultados
+        path: results/
