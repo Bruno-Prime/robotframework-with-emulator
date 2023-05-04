@@ -1,8 +1,8 @@
 name: Execução com Emulador
 
 on:
-  push:
-    branches: [ main ]
+  # push:
+  #   branches: [ main ]
   workflow_dispatch:
 
 env:
@@ -17,7 +17,7 @@ jobs:
     # runs-on: macos-latest
     strategy:
       matrix:
-        api-level: [29]
+        api-level: [32]
         state: ['Online']
       max-parallel: 1
 
@@ -53,4 +53,38 @@ jobs:
           cd android-sdk
           wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
           unzip commandlinetools-linux-7583922_latest.zip
-         
+          mv cmdline-tools tools
+          chmod +x ../scripts/android-licenses.exp
+          ../scripts/android-licenses.exp
+          export PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$PATH
+          export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+          echo "y" | ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-28" "build-tools;28.0.3" || true
+          echo 'export ANDROID_HOME="$HOME/android-sdk"' >> $GITHUB_ENV
+          export ANDROID_HOME="$HOME/android-sdk"
+        shell: bash
+
+      - name: Update SDK
+        run: |
+          ls $ANDROID_HOME
+
+      - name: Create AVD
+        run: |
+          export PATH=$PATH:$ANDROID_HOME/tools/bin
+          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-${{ matrix.api-level }};${{ env.TARGET }};${{ env.ARCH }}" || true
+          echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd -n test -k "system-images;android-${{ matrix.api-level }};${{ env.TARGET }};${{ env.ARCH }}" --force --device "pixel" --abi "default/x86_64" -c 500M
+
+      - name: List devices
+        run: |
+          $ANDROID_HOME/tools/emulator -list-avds
+          $ANDROID_HOME/platform-tools/adb devices
+
+      - name: Run Tests
+        continue-on-error: true
+        run: |
+          robot -d results/${{ matrix.api-level }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: resultados
+          path: results/
