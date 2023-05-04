@@ -6,10 +6,10 @@ on:
   workflow_dispatch:
 
 env:
-    CACHE_VERSION: 1 # Increment this to invalidate the cache.
-    JAVA_VERSION: 19
-    TARGET: google_apis
-    ARCH: x86_64
+  CACHE_VERSION: 1 # Increment this to invalidate the cache.
+  JAVA_VERSION: 19
+  TARGET: google_apis
+  ARCH: x86_64
 
 jobs:
   mobile-tests:
@@ -22,71 +22,68 @@ jobs:
       max-parallel: 1
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
 
-      - name: Install Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install expect tree
-          pip3 install -r requirements.txt
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install expect tree
+        pip3 install -r requirements.txt
 
-      - name: Start AppiumServer
-        run: |
-          chmod +x ./scripts/startAppiumServer.sh
-          ./scripts/startAppiumServer.sh
-        shell: bash
+    - name: Start AppiumServer
+      run: |
+        chmod +x ./scripts/startAppiumServer.sh
+        ./scripts/startAppiumServer.sh
+      shell: bash
 
-      - name: Setup Java JDK
-        uses: actions/setup-java@v1.4.4
-        with:
-          java-version: 1.8
+    - name: Setup Java JDK
+      uses: actions/setup-java@v1.4.4
+      with:
+        java-version: 1.8
 
-      - name: Check Java Version
-        run: |
-          echo $JAVA_HOME
-          java -version
+    - name: Check Java Version
+      run: |
+        echo $JAVA_HOME
+        java -version
 
-      - name: Install Android SDK
-        run: |
-          mkdir android-sdk
-          cd android-sdk
-          wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
-          unzip commandlinetools-linux-7583922_latest.zip
-          mv cmdline-tools tools
-          chmod +x ../scripts/android-licenses.exp
-          ../scripts/android-licenses.exp
-          export PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$PATH
-          export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
-          echo "y" | ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-28" "build-tools;28.0.3" || true
-          echo 'export ANDROID_HOME="$HOME/android-sdk"' >> $GITHUB_ENV
-          export ANDROID_HOME="$HOME/android-sdk"
-        shell: bash
+    - name: Install Android SDK
+      run: |
+        mkdir android-sdk
+        cd android-sdk
+        wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
+        unzip commandlinetools-linux-7583922_latest.zip
+        mv cmdline-tools tools
+        chmod +x ../scripts/android-licenses.exp
+        ../scripts/android-licenses.exp
+        export PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$PATH
+        export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+        echo "y" | ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-28" "build-tools;28.0.3" "system-images;android-28;google_apis;x86_64" || true
+        echo 'export ANDROID_HOME="$HOME/android-sdk"' >> $GITHUB_ENV
+        export ANDROID_HOME="$HOME/android-sdk"
+      shell: bash
 
-      - name: Update SDK
-        run: |
-          ls $ANDROID_HOME
+    - name: Update SDK
+      run: |
+        ls $ANDROID_HOME
 
-      - name: Create AVD
-        run: |
-          export PATH=$PATH:$ANDROID_HOME/tools/bin
-          tag=${{ env.TARGET_TAG }}
-          tag=${tag:-default}
-          echo "Using tag: $tag"
-          echo "no" | ./$ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-28;google_apis;x86_64" --sdk_root=$ANDROID_HOME --tag $tag
-          echo "no" | ./$ANDROID_HOME/tools/bin/avdmanager create avd --force --name "test" --package "system-images;android-28;google_apis;x86_64" --tag $tag --abi "x86_64"
+    - name: Create AVD
+      run: |
+        export PATH=$PATH:$ANDROID_HOME/tools/bin
+        ./tools/bin/avdmanager create avd -n test -k "system-images;android-28;google_apis;x86_64" --force
 
-      - name: List devices
-        run: |
-          $ANDROID_HOME/tools/emulator -list-avds
-          $ANDROID_HOME/platform-tools/adb devices
-      - name: Run Tests
-        continue-on-error: true
-        run: |
-          robot -d results/${{ matrix.api-level }}
+    - name: List devices
+      run: |
+        $ANDROID_HOME/emulator/emulator -list-avds
+        $ANDROID_HOME/platform-tools/adb devices
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: resultados
-          path: results/
+    - name: Run Tests
+      continue-on-error: true
+      run: |
+        robot -d results/${{ matrix.api-level }}
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: resultados
+        path: results/
