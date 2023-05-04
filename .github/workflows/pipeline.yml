@@ -6,10 +6,10 @@ on:
   workflow_dispatch:
 
 env:
-  CACHE_VERSION: 1 # Increment this to invalidate the cache.
-  JAVA_VERSION: 19
-  TARGET: google_apis
-  ARCH: x86_64
+    CACHE_VERSION: 1 # Increment this to invalidate the cache.
+    JAVA_VERSION: 19
+    TARGET: google_apis
+    ARCH: x86_64
 
 jobs:
   mobile-tests:
@@ -70,14 +70,16 @@ jobs:
       - name: Create AVD
         run: |
           export PATH=$PATH:$ANDROID_HOME/tools/bin
-          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-${{ matrix.api-level }};${{ env.TARGET }};${{ env.ARCH }}" || true
-          echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd -n test -k "system-images;android-${{ matrix.api-level }};${{ env.TARGET }};${{ env.ARCH }}" --force --device "pixel" --abi "default/x86_64" -c 500M
+          tag=${{ env.TARGET_TAG }}
+          tag=${tag:-default}
+          echo "Using tag: $tag"
+          echo "no" | ./$ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-28;google_apis;x86_64" --sdk_root=$ANDROID_HOME --tag $tag
+          echo "no" | ./$ANDROID_HOME/tools/bin/avdmanager create avd --force --name "test" --package "system-images;android-28;google_apis;x86_64" --tag $tag --abi "x86_64"
 
       - name: List devices
         run: |
           $ANDROID_HOME/tools/emulator -list-avds
           $ANDROID_HOME/platform-tools/adb devices
-
       - name: Run Tests
         continue-on-error: true
         run: |
