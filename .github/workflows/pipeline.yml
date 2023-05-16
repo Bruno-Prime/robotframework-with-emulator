@@ -26,8 +26,9 @@ jobs:
       with:
         api-level: 30
         target: default
-        arch: arm64-v8a
+        arch: x86
         profile: Nexus 6
+        working-directory: ~/ANDROID
         script: python3 -m robot -d results .
 
     - name: Upload Artifacts
