@@ -1,8 +1,7 @@
 name: Testes de integração
 
 on:
-  push:
-    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   testes:
