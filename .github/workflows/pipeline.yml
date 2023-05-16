@@ -1,35 +1,19 @@
-name: Execução com Emulador
+name: Testes de integração
 
 on:
-  # push:
-  #   branches: [ main ]
-  workflow_dispatch:
-
-env:
-  CACHE_VERSION: 1 # Increment this to invalidate the cache.
-  JAVA_VERSION: 19
-  TARGET: google_apis
-  ARCH: x86_64
+  push:
+    branches: [ main ]
 
 jobs:
-  mobile-tests:
-    runs-on: ubuntu-latest
-    # runs-on: macos-latest
-    strategy:
-      matrix:
-        api-level: [32]
-        state: ['Online']
-      max-parallel: 1
+  testes:
+    runs-on: self-hosted
 
     steps:
     - name: Checkout
       uses: actions/checkout@v3
 
     - name: Install Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install expect tree
-        pip3 install -r requirements.txt
+      run: pip3 install -r requirements.txt
 
     - name: Start AppiumServer
       run: |
@@ -37,53 +21,18 @@ jobs:
         ./scripts/startAppiumServer.sh
       shell: bash
 
-    - name: Setup Java JDK
-      uses: actions/setup-java@v1.4.4
-      with:
-        java-version: 1.8
-
-    - name: Check Java Version
-      run: |
-        echo $JAVA_HOME
-        java -version
-
-    - name: Install Android SDK
-      run: |
-        mkdir android-sdk
-        cd android-sdk
-        wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
-        unzip commandlinetools-linux-7583922_latest.zip
-        mv cmdline-tools tools
-        chmod +x ../scripts/android-licenses.exp
-        ../scripts/android-licenses.exp
-        export PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$PATH
-        export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
-        echo "y" | ./tools/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-28" "build-tools;28.0.3" "system-images;android-28;google_apis;x86_64" || true
-        echo 'export ANDROID_HOME="$HOME/android-sdk"' >> $GITHUB_ENV
-        export ANDROID_HOME="$HOME/android-sdk"
-      shell: bash
-
-    - name: Update SDK
-      run: |
-        ls $ANDROID_HOME
-
     - name: Create AVD
-      run: |
-        export PATH=$PATH:$ANDROID_HOME/tools/bin
-        ./tools/bin/avdmanager create avd -n test -k "system-images;android-28;google_apis;x86_64" --force
-
-    - name: List devices
-      run: |
-        $ANDROID_HOME/emulator/emulator -list-avds
-        $ANDROID_HOME/platform-tools/adb devices
-
-    - name: Run Tests
       continue-on-error: true
-      run: |
-        robot -d results/${{ matrix.api-level }}
+      uses: reactivecircus/android-emulator-runner@v2.27.0
+      with:
+        api-level: 30
+        target: default
+        arch: arm64-v8a
+        profile: Nexus 6
+        script: python3 -m robot -d results .
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: resultados
+        name: resultados-testes
         path: results/
