@@ -1,6 +1,6 @@
 #!/bin/bash
 set -ex
-npm install -g appium
+# npm install -g appium
 # npm install -g appium@next
 # appium driver install xcuitest
 # appium driver install espresso
