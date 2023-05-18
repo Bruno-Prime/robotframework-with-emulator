@@ -23,22 +23,28 @@ jobs:
         ./scripts/startAppiumServer.sh
       shell: bash
 
-    - name: Limpar Ambiente
+    - name: Run Tests
+      continue-on-error: true
       run: |
-        rm /usr/lib/android-sdk/build-tools/* -f -r
-        rm /usr/lib/android-sdk/platforms/* -f -r
+        python3 -m robot -d results .
       shell: bash
 
-    - name: Create AVD
-      continue-on-error: true
-      uses: reactivecircus/android-emulator-runner@v2.27.0
-      with:
-        api-level: 30
-        target: default
-        arch: x86
-        profile: Nexus 6
-        working-directory: ~/ANDROID
-        script: python3 -m robot -d results .
+#     - name: Limpar Ambiente
+#       run: |
+#         rm /usr/lib/android-sdk/build-tools/* -f -r
+#         rm /usr/lib/android-sdk/platforms/* -f -r
+#       shell: bash
+
+#     - name: Create AVD
+#       continue-on-error: true
+#       uses: reactivecircus/android-emulator-runner@v2.27.0
+#       with:
+#         api-level: 30
+#         target: default
+#         arch: x86
+#         profile: Nexus 6
+#         working-directory: ~/ANDROID
+#         script: python3 -m robot -d results .
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
