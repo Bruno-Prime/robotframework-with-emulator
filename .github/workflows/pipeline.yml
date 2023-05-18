@@ -3,6 +3,9 @@ name: Testes de integração
 on:
   workflow_dispatch:
 
+env:
+  ANDROID_HOME: "/usr/lib/android-sdk"
+
 jobs:
   testes:
     runs-on: self-hosted
