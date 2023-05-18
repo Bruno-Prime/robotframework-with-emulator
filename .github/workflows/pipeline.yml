@@ -3,9 +3,6 @@ name: Testes de integração
 on:
   workflow_dispatch:
 
-env:
-  ANDROID_HOME: "/usr/lib/android-sdk"
-
 jobs:
   testes:
     runs-on: self-hosted
@@ -17,11 +14,11 @@ jobs:
     - name: Install Dependencies
       run: pip3 install -r requirements.txt
 
-    - name: Start AppiumServer
-      run: |
-        chmod +x ./scripts/startAppiumServer.sh
-        ./scripts/startAppiumServer.sh
-      shell: bash
+#     - name: Start AppiumServer
+#       run: |
+#         chmod +x ./scripts/startAppiumServer.sh
+#         ./scripts/startAppiumServer.sh
+#       shell: bash
 
     - name: Run Tests
       continue-on-error: true
