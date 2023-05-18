@@ -20,6 +20,12 @@ jobs:
         ./scripts/startAppiumServer.sh
       shell: bash
 
+    - name: Limpar Ambiente
+      run: |
+        rm /usr/lib/android-sdk/build-tools/* -f -r
+        rm /usr/lib/android-sdk/platforms/* -f -r
+      shell: bash
+
     - name: Create AVD
       continue-on-error: true
       uses: reactivecircus/android-emulator-runner@v2.27.0
