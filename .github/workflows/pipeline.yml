@@ -23,7 +23,7 @@ jobs:
     - name: Run Tests
       continue-on-error: true
       run: |
-        python3 -m robot -d results .
+        robot -d results .
       shell: bash
 
 #     - name: Limpar Ambiente
