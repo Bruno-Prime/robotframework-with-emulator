@@ -14,11 +14,12 @@ jobs:
     - name: Install Dependencies
       run: pip3 install -r requirements.txt
 
-#     - name: Start AppiumServer
-#       run: |
-#         chmod +x ./scripts/startAppiumServer.sh
-#         ./scripts/startAppiumServer.sh
-#       shell: bash
+    - name: Start Emulator
+      run: |
+        emulator -avd Pixel_3a_API_33_x86_64 &
+        chmod +x ./scripts/wait_device.sh
+        ./scripts/wait_device.sh  240
+      shell: bash
 
     - name: Run Tests
       continue-on-error: true
@@ -26,22 +27,10 @@ jobs:
         robot -d results .
       shell: bash
 
-#     - name: Limpar Ambiente
-#       run: |
-#         rm /usr/lib/android-sdk/build-tools/* -f -r
-#         rm /usr/lib/android-sdk/platforms/* -f -r
-#       shell: bash
-
-#     - name: Create AVD
-#       continue-on-error: true
-#       uses: reactivecircus/android-emulator-runner@v2.27.0
-#       with:
-#         api-level: 30
-#         target: default
-#         arch: x86
-#         profile: Nexus 6
-#         working-directory: ~/ANDROID
-#         script: python3 -m robot -d results .
+    - name: Kill Emulator
+      run: |
+        adb -s emulator-5554 emu kill
+      shell: bash
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
